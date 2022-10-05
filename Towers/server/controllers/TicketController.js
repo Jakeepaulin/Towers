@@ -12,23 +12,23 @@ export class TicketController extends BaseController {
   }
 
   async createTicket(req, res, next) {
-    const ticket = await ticketsService.createTicketForEvent(
-      req.body.eventId,
-      req.userInfo.id
-    );
-    res.send(ticket);
     try {
+      const ticket = await ticketsService.createTicketForEvent(
+        req.body.eventId,
+        req.userInfo.id
+      );
+      res.send(ticket);
     } catch (error) {
       next(error);
     }
   }
   async removeTicket(req, res, next) {
-    const ticket = await ticketsService.removeTicket(
-      req.params.ticketId,
-      req.userInfo.id
-    );
-    res.send(ticket);
     try {
+      const ticket = await ticketsService.removeTicket(
+        req.params.ticketId,
+        req.userInfo.id
+      );
+      res.send(ticket);
     } catch (error) {
       next(error);
     }

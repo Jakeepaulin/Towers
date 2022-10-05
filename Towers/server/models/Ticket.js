@@ -10,6 +10,8 @@ export const TicketSchema = new Schema(
   SCHEMA_OPTIONS
 );
 
+TicketSchema.index({ accountId: 1, evenId: 1 }, { unique: true });
+
 TicketSchema.virtual("profile", {
   localField: "accountId",
   foreignField: "_id",

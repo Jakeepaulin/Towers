@@ -23,10 +23,10 @@ export class AccountController extends BaseController {
 
   async getMyTickets(req, res, next) {
     try {
-      const ticket = await ticketsService.getTicketsByAccountId(
+      const tickets = await ticketsService.getTicketsByAccountId(
         req.userInfo.id
       );
-      res.send(ticket);
+      res.send(tickets);
     } catch (error) {
       next(error);
     }

@@ -56,6 +56,9 @@ class EventsService {
 
   async createEvent(eventData) {
     const event = await dbContext.Event.create(eventData);
+    if (eventData.startDate < new Date()) {
+      throw new BadRequest("You Cannot create an event of the past");
+    }
     await event.populate("creator", "name picture type");
     return event;
   }
