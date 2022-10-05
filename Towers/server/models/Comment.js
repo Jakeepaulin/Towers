@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 export const CommentSchema = new Schema({
   creatorId: { type: ObjectId, required: true, ref: "Account" },
-  eventId: { type: ObjectId, required: true, ref: "TowerEvent" },
+  eventId: { type: ObjectId, required: true, ref: "Event" },
   body: { type: String, required: true, minlength: 2, maxlength: 500 },
   isAttending: { type: Boolean, default: false },
 });
