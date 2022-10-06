@@ -1,9 +1,15 @@
 <template>
-  <header>
-    <Navbar />
-  </header>
-  <main>
-    <router-view />
+  <main class="bg-dark">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-10">
+          <router-view />
+        </div>
+        <div class="col-md-2 p-0">
+          <Navbar />
+        </div>
+      </div>
+    </div>
   </main>
   <footer>
     <div class="bg-dark text-light text-center p-4">
@@ -13,18 +19,18 @@
 </template>
 
 <script>
-import { computed } from 'vue'
-import { AppState } from './AppState'
-import Navbar from './components/Navbar.vue'
+import { computed } from "vue";
+import { AppState } from "./AppState";
+import Navbar from "./components/Navbar.vue";
 
 export default {
   setup() {
     return {
-      appState: computed(() => AppState)
-    }
+      appState: computed(() => AppState),
+    };
   },
-  components: { Navbar }
-}
+  components: { Navbar },
+};
 </script>
 <style lang="scss">
 @import "./assets/scss/main.scss";
