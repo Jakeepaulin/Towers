@@ -23,8 +23,13 @@
               v-if="event?.capacity >= 0"
               class="col-md-12 d-flex justify-content-between pe-2"
             >
-              <p>Capacity:{{ event?.capacity }}</p>
-              <button class="btn btn-warning pe-3">Attend</button>
+              <p> Spots left: <div class="text-success">{{ event?.capacity }}</div></p>
+              <button @click="addTicket()" class="btn btn-warning pe-3">
+                Attend
+              </button>
+              <button @click="removeTicket()" class="btn btn-danger pe-3">
+                Un-Attend
+              </button>
             </div>
             <div v-else class="col-md-12 d-flex align-content-bottom">
               <h4 class="text-danger">Sold Out</h4>
@@ -35,22 +40,26 @@
     </div>
     <div class="row">
       <div class="col-md-12 bg-secondary rounded my-3">
-        <div>{{ ticket }}</div>
+        <div>{{ ticket.picture }}</div>
       </div>
     </div>
     <div class="row">
-      <div class="col-md-12 bg-secondary my-3"></div>
       <div>
-        <label for="body">Comment:</label>
-        <textarea
+        <form action="submit" @submit.prevent="createComment()">
+          <label class="py-2" for="body">Comment:</label>
+          <textarea
           type="text"
           class="form-control"
           v-model="editable.body"
           name="body"
-          rows="8"
+          rows="4"
           style="resize: none"
-        ></textarea>
-        <!-- NOTE put button for submission here -->
+          >
+        </textarea>
+        <div class="col-12 d-flex justify-content-end py-2">
+          <button type="submit" class="btn btn-info text-end"> Add Comment</button>
+        </div>
+      </form>
       </div>
       <div class="col-md-12 bg-secondary my-3">
         <div>{{ comment }}</div>
@@ -64,6 +73,7 @@ import { computed, onMounted, ref, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import { AppState } from "../AppState.js";
 import { attendeesService } from "../services/AttendeesService.js";
+import { AuthService } from "../services/AuthService.js";
 import { commentsService } from "../services/CommentsService.js";
 import { eventsService } from "../services/EventsService.js";
 import Pop from "../utils/Pop.js";
@@ -81,7 +91,7 @@ export default {
       try {
         await eventsService.getEventsById(route.params.id);
       } catch (error) {
-        Pop.error(error, "[GetAlbum]");
+        Pop.error(error, "[GetEvent]");
       }
     }
     async function getTicketsByEventId() {
@@ -110,6 +120,50 @@ export default {
       comment: computed(() => AppState.comments),
       event: computed(() => AppState.activeEvent),
       ticket: computed(() => AppState.tickets),
+      async addTicket() {
+        try {
+          if (!AppState.account.id) {
+            return AuthService.loginWithRedirect();
+          }
+          await attendeesService.addTicket({
+            eventId: AppState.activeEvent.id || route.params.id,
+          });
+          Pop.success("Thanks for coming to our event!");
+        } catch (error) {
+          Pop.error(error);
+        }
+      },
+      async removeTicket() {
+        try {
+          const yes = await Pop.confirm(
+            "Are you sure you want to Un-Attend this event?"
+          );
+          if (!yes) {
+            return;
+          }
+          const ticket = AppState.tickets.find(
+            (t) =>
+              t.accountId == AppState.account.id &&
+              t.eventId == AppState.activeEvent.id
+          );
+          await attendeesService.removeTicket(ticket.id);
+        } catch (error) {
+          Pop.error(error);
+        }
+      },
+      async createComment() {
+        try {
+          // if (!AppState.account.id) {
+          //   return AuthService.loginWithRedirect();
+          // }
+          await commentsService.createComment(editable.value);
+          editable.value = {
+            comment: {},
+          };
+        } catch (error) {
+          Pop.error(error);
+        }
+      },
     };
   },
 };

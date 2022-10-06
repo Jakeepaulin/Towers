@@ -11,6 +11,7 @@ class AttendeesService {
   async removeTicket(ticketId) {
     await api.delete(`api/tickets/${ticketId}`);
     AppState.tickets = AppState.tickets.filter((t) => t.id != ticketId);
+    console.log("You are Un-Attended");
   }
 
   async addTicket(eventData) {

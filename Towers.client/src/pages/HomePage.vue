@@ -55,7 +55,7 @@ export default {
         // a.name.toUpperCase().includes(editable.value.toUpperCase())
         // )
       ),
-      async getAlbumsByType(type) {
+      async getEventsByType(type) {
         try {
           await eventsService.getEvents(type);
         } catch (error) {

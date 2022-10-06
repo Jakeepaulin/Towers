@@ -42,7 +42,7 @@ class EventsService {
       "name picture"
     );
     if (!event) {
-      throw new BadRequest("Invalid or Bad Album Id");
+      throw new BadRequest("Invalid or Bad Event Id");
     }
     return event;
   }
@@ -66,7 +66,7 @@ class EventsService {
   async getEventIfNotCancelled(eventId) {
     const event = await this.getEventById(eventId);
     if (event.isCanceled) {
-      throw new BadRequest("The album is archived");
+      throw new BadRequest("The event is archived");
     }
     return event;
   }

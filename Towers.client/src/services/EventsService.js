@@ -26,7 +26,7 @@ class EventsService {
   async createEvent(eventData) {
     const res = await api.post(`api/events`, eventData);
     const event = new Event(res.data);
-    AppState.events = [...AppState.events, event];
+    AppState.events = [event, ...AppState.events];
     AppState.activeEvent = event;
     router.push({ name: "Event", params: { id: event.id } });
   }
