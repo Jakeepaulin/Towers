@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar long color align-content-start">
+  <nav class="navbar navbar long color align-content-start sticky-top">
     <div class="container-fluid justify-content-center">
       <div class="row py-3">
         <Login />

@@ -11,8 +11,8 @@ export class EventController extends BaseController {
       .get("", this.getAllEvents)
       .get("/:id", this.getEventById)
       .get("/:id/comments", this.getCommentsByEventId)
-      .use(Auth0Provider.getAuthorizedUserInfo)
       .get("/:id/tickets", this.getTicketsByEventId)
+      .use(Auth0Provider.getAuthorizedUserInfo)
       .post("", this.createEvent)
       .put("/:id", this.editEvent)
       .delete("/:id", this.cancelEvent);

@@ -7,7 +7,6 @@
     >
       Login
     </button>
-
     <div class="dropdown my-2 my-lg-0" v-else>
       <div
         class="dropdown-toggle selectable"
@@ -38,32 +37,31 @@
           <!-- NOTE this is where you are creating your events -->
           <div class="col-md-12">
             <button
-              class="btn selectable text-success lighten-30 text-uppercase my-2 my-lg-0"
-              @click="createNewEvent()"
+              class="btn text-success lighten-30 selectable text-uppercase"
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
             >
-              New Event
+              Create Event
             </button>
           </div>
-          <!-- <span class="mx-3 text-success lighten-30">{{
-            account.name || user.name
-          }}</span> -->
         </div>
-      </div>
-      <div
-        class="dropdown-menu p-0 list-group w-100"
-        aria-labelledby="authDropdown"
-      >
-        <router-link :to="{ name: 'Account' }">
-          <div class="list-group-item list-group-item-action hoverable">
-            Manage Account
-          </div>
-        </router-link>
         <div
-          class="list-group-item list-group-item-action hoverable text-danger"
-          @click="logout"
+          class="dropdown-menu p-0 list-group w-100"
+          aria-labelledby="authDropdown"
         >
-          <i class="mdi mdi-logout"></i>
-          logout
+          <router-link :to="{ name: 'Account' }">
+            <div class="list-group-item list-group-item-action">
+              Manage Account
+            </div>
+          </router-link>
+          <div
+            class="list-group-item list-group-item-action text-danger"
+            @click="logout"
+          >
+            <i class="mdi mdi-logout"></i>
+            logout
+          </div>
         </div>
       </div>
     </div>
@@ -79,6 +77,7 @@ export default {
     return {
       user: computed(() => AppState.user),
       account: computed(() => AppState.account),
+      event: computed(() => AppState.event),
       async login() {
         AuthService.loginWithPopup();
       },
@@ -100,9 +99,5 @@ export default {
 
 .dropdown-menu.show {
   transform: scale(1);
-}
-
-.hoverable {
-  cursor: pointer;
 }
 </style>
