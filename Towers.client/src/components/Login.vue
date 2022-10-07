@@ -1,12 +1,13 @@
 <template>
-  <span class="navbar-text justify-content-center text-center">
+  <span class="navbar-text">
     <button
-      class="btn selectable text-success lighten-30 text-uppercase my-2 my-lg-0"
+      class="btn selectable text-success lighten-30 text-uppercase my-2 my-lg-0 d-flex justify-content-center align-content-center"
       @click="login"
       v-if="!user.isAuthenticated"
     >
       Login
     </button>
+
     <div class="dropdown my-2 my-lg-0" v-else>
       <div
         class="dropdown-toggle selectable"
@@ -15,57 +16,47 @@
         id="authDropdown"
       >
         <div
-          class="d-flex flex-wrap align-items-center justify-content-center gap-3"
           v-if="account.picture || user.picture"
+          class="d-flex flex-wrap align-content-center justify-content-center gap-4"
         >
-          <div class="col-md-12">
-            <img
-              :src="account.picture || user.picture"
-              alt="account photo"
-              height="40"
-              class="rounded"
-            />
-          </div>
-          <div class="col-md-12">
-            <router-link
-              :to="{ name: 'Account' }"
-              class="btn text-success lighten-30 selectable text-uppercase"
-            >
-              Account
-            </router-link>
-          </div>
-          <!-- NOTE this is where you are creating your events -->
-          <div class="col-md-12">
-            <button
-              class="btn text-success lighten-30 selectable text-uppercase"
-              type="button"
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
-            >
-              Create Event
-            </button>
-          </div>
+          <img
+            :src="account.picture || user.picture"
+            alt="account photo"
+            height="40"
+            class="rounded"
+          />
+          <span class="mx-3 text-success lighten-30">{{
+            account.name || user.name
+          }}</span>
         </div>
-        <div
-          class="dropdown-menu p-0 list-group w-100"
-          aria-labelledby="authDropdown"
-        >
-          <router-link :to="{ name: 'Account' }">
-            <div class="list-group-item list-group-item-action">
-              Manage Account
-            </div>
-          </router-link>
-          <div
-            class="list-group-item list-group-item-action text-danger"
-            @click="logout"
-          >
-            <i class="mdi mdi-logout"></i>
-            logout
+      </div>
+      <div
+        class="dropdown-menu p-0 list-group w-100"
+        aria-labelledby="authDropdown"
+      >
+        <router-link :to="{ name: 'Account' }">
+          <div class="list-group-item list-group-item-action hoverable">
+            Manage Account
           </div>
+        </router-link>
+        <div
+          class="list-group-item list-group-item-action hoverable text-danger"
+          @click="logout"
+        >
+          <i class="mdi mdi-logout"></i>
+          logout
         </div>
       </div>
     </div>
   </span>
+  <button
+    class="btn text-success lighten-30 selectable text-uppercase"
+    type="button"
+    data-bs-toggle="modal"
+    data-bs-target="#exampleModal"
+  >
+    Create Event
+  </button>
 </template>
 
 <script>

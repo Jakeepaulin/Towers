@@ -1,5 +1,5 @@
 <template>
-  <div class="col-md-3 my-3">
+  <div class="col-md-3 my-2">
     <router-link :to="{ name: 'Event', params: { id: event.id } }">
       <div
         class="card elevation-1"
@@ -8,9 +8,12 @@
         <div class="card-body"></div>
         <div class="card-footer d-flex flex-wrap align-content-start pt-2">
           <h5 class="text-start text-shadow mb-2">{{ event.name }}</h5>
-          <div class="text-light">
+          <div class="text-light" v-if="event?.isCanceled == false">
             <p class="m-0">{{ event.location }}</p>
             <p class="m-0">{{ event.startDate }}</p>
+          </div>
+          <div v-else>
+            <h3 class="text-danger">This event has been canceled</h3>
           </div>
         </div>
       </div>

@@ -16,8 +16,10 @@ class AttendeesService {
 
   async addTicket(eventData) {
     const res = await api.post(`api/tickets`, eventData);
-    const ticket = res.data;
+    const ticket = res.data.profile;
     AppState.tickets.push(ticket);
+    this.getTicketsByEventId();
+    console.log(res.data.profile);
   }
 }
 

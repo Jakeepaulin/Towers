@@ -13,10 +13,10 @@ class EventsService {
         },
       });
     } else {
-      const res = await api.get("api/events");
+      res = await api.get("api/events");
       console.log(res.data);
-      AppState.events = res.data.map((e) => new Event(e));
     }
+    AppState.events = res.data.map((e) => new Event(e));
   }
   async getEventsById(id) {
     const res = await api.get(`api/events/${id}`);
@@ -26,7 +26,7 @@ class EventsService {
   async createEvent(eventData) {
     const res = await api.post(`api/events`, eventData);
     const event = new Event(res.data);
-    AppState.events = [event, ...AppState.events];
+    AppState.events = [...AppState.events, event];
     AppState.activeEvent = event;
     router.push({ name: "Event", params: { id: event.id } });
   }
@@ -36,6 +36,14 @@ class EventsService {
     AppState.events = AppState.events.filter((e) => e.id != id);
     AppState.activeEvent = null;
     router.push({ name: "Home" });
+  }
+
+  async cancelEvent(id) {
+    await api.delete(`api/events/${id}`);
+
+    AppState.events = AppState.events.filter((e) => e.id != id);
+    AppState.activeEvent = null;
+    router.push({ name: `Home` });
   }
 }
 

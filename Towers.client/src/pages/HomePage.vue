@@ -18,6 +18,35 @@
           <div class="card-body"></div>
         </div>
       </div>
+      <div class="col-md-12 d-flex justify-content-around py-1">
+        <button @click="getEventsByType('')" class="btn btn-outline-success">
+          All Events
+        </button>
+        <button
+          @click="getEventsByType('convention')"
+          class="btn btn-outline-success"
+        >
+          Conventions
+        </button>
+        <button
+          @click="getEventsByType('sport')"
+          class="btn btn-outline-success"
+        >
+          Sports
+        </button>
+        <button
+          @click="getEventsByType('concert')"
+          class="btn btn-outline-success"
+        >
+          Music
+        </button>
+        <button
+          @click="getEventsByType('digital')"
+          class="btn btn-outline-success"
+        >
+          Tech
+        </button>
+      </div>
       <div class="row">
         <event-card v-for="e in events" :key="e.id" :event="e" />
       </div>

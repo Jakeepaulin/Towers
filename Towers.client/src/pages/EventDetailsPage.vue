@@ -12,7 +12,13 @@
           </div>
           <div class="col-md-7 d-flex flex-wrap justify-content-between">
             <div class="col-md-12">
-              <h3>{{ event?.name }}</h3>
+              <div class="d-flex justify-content-between">
+                <h3>{{ event?.name }}</h3>
+                <!-- NOTE need to only show if creator -->
+                 <button @click="cancelEvent()" class="btn btn-danger pe-3" v-if="event?.creatorId == account?.id">
+                Cancel Event
+              </button>
+              </div>
               <h6>{{ event?.location }}</h6>
               <h6>{{ event?.startDate }}</h6>
             </div>
@@ -20,27 +26,32 @@
               <p>{{ event?.description }}</p>
             </div>
             <div
-              v-if="event?.capacity >= 0"
+              v-if="event?.capacity > 0"
               class="col-md-12 d-flex justify-content-between pe-2"
             >
               <p> Spots left: <div class="text-success">{{ event?.capacity }}</div></p>
-              <button @click="addTicket()" class="btn btn-warning pe-3">
+              <button @click="addTicket()" class="btn btn-warning pe-3" v-if="!isAttending">
                 Attend
               </button>
-              <button @click="removeTicket()" class="btn btn-danger pe-3">
+              <button @click="removeTicket()" class="btn btn-danger pe-3" v-else>
                 Un-Attend
               </button>
             </div>
             <div v-else class="col-md-12 d-flex align-content-bottom">
-              <h4 class="text-danger">Sold Out</h4>
+              <h4 class="text-danger">This Event is Sold Out</h4>
             </div>
           </div>
+          <!-- <div class=" col-md-7 d-flex justify-content-center align-content-center text-danger" v-else> 
+            <h3 class="pt-3">
+              This event has been canceled... sorry
+            </h3>
+          </div> -->
         </div>
       </div>
     </div>
     <div class="row">
-      <div class="col-md-12 bg-secondary rounded my-3">
-        <div>{{ ticket.picture }}</div>
+      <div class="col-12 d-flex flex-direction-row gap-3">
+        <Ticket v-for="t in tickets" :key="t.id" :ticket="t"/>
       </div>
     </div>
     <div class="row">
@@ -61,8 +72,15 @@
         </div>
       </form>
       </div>
-      <div class="col-md-12 bg-secondary my-3">
-        <div>{{ comment }}</div>
+      <h6>What people are saying:</h6>
+      <div class="col-md-12 bg-secondary my-2 rounded">
+        <div class="col-md-12 d-flex justify-content-between align-items-center my-3 bg-light rounded" v-for="c in comments">
+        <Comment :key="c.id" :comment="c" class="p-3"/>
+          <i
+                class="mdi mdi-delete selectable text-danger rounded text-end px-3"
+                @click.stop="removeComment(comments.id)"
+              ></i>
+        </div>
       </div>
     </div>
   </div>
@@ -77,95 +95,126 @@ import { AuthService } from "../services/AuthService.js";
 import { commentsService } from "../services/CommentsService.js";
 import { eventsService } from "../services/EventsService.js";
 import Pop from "../utils/Pop.js";
+import Ticket from "../components/Ticket.vue";
+import Comment from "../components/Comment.vue";
 
 export default {
-  setup() {
-    const editable = ref({
-      comment: {},
-    });
-    watchEffect(() => {
-      editable.value = { ...AppState.post };
-    });
-    const route = useRoute();
-    async function getEventById() {
-      try {
-        await eventsService.getEventsById(route.params.id);
-      } catch (error) {
-        Pop.error(error, "[GetEvent]");
-      }
-    }
-    async function getTicketsByEventId() {
-      try {
-        await attendeesService.getTicketsByEventId(route.params.id);
-      } catch (error) {
-        Pop.error(error, "[GetTickets]");
-      }
-    }
-    async function getCommentsByEventId() {
-      try {
-        await commentsService.getCommentsByEventId(route.params.id);
-      } catch (error) {
-        Pop.error(error, "[GetComments]");
-      }
-    }
-    onMounted(() => {
-      getEventById();
-      getTicketsByEventId();
-      getCommentsByEventId();
-    });
-    return {
-      editable,
-      // event: computed(() => AppState.events),
-      account: computed(() => AppState.account),
-      comment: computed(() => AppState.comments),
-      event: computed(() => AppState.activeEvent),
-      ticket: computed(() => AppState.tickets),
-      async addTicket() {
-        try {
-          if (!AppState.account.id) {
-            return AuthService.loginWithRedirect();
-          }
-          await attendeesService.addTicket({
-            eventId: AppState.activeEvent.id || route.params.id,
-          });
-          Pop.success("Thanks for coming to our event!");
-        } catch (error) {
-          Pop.error(error);
+    setup() {
+        const editable = ref({
+            comments: {},
+        });
+        watchEffect(() => {
+          editable.value = { ...AppState.post };
+        });
+        const route = useRoute();
+        async function getEventById() {
+            try {
+                await eventsService.getEventsById(route.params.id);
+            }
+            catch (error) {
+                Pop.error(error, "[GetEvent]");
+            }
         }
-      },
-      async removeTicket() {
-        try {
-          const yes = await Pop.confirm(
-            "Are you sure you want to Un-Attend this event?"
-          );
-          if (!yes) {
-            return;
-          }
-          const ticket = AppState.tickets.find(
-            (t) =>
-              t.accountId == AppState.account.id &&
-              t.eventId == AppState.activeEvent.id
-          );
-          await attendeesService.removeTicket(ticket.id);
-        } catch (error) {
-          Pop.error(error);
+        async function getTicketsByEventId() {
+            try {
+                await attendeesService.getTicketsByEventId(route.params.id);
+            }
+            catch (error) {
+                Pop.error(error, "[GetTickets]");
+            }
         }
-      },
-      async createComment() {
-        try {
-          // if (!AppState.account.id) {
-          //   return AuthService.loginWithRedirect();
-          // }
-          await commentsService.createComment(editable.value);
-          editable.value = {
-            comment: {},
-          };
-        } catch (error) {
-          Pop.error(error);
+        async function getCommentsByEventId() {
+            try {
+                await commentsService.getCommentsByEventId(route.params.id);
+            }
+            catch (error) {
+                Pop.error(error, "[GetComments]");
+            }
         }
-      },
-    };
-  },
+        onMounted(() => {
+            getEventById();
+            getTicketsByEventId();
+            getCommentsByEventId();
+        });
+        return {
+            editable,
+            account: computed(() => AppState.account),
+            comments: computed(() => AppState.comments),
+            events: computed(()=> AppState.events),
+            event: computed(() => AppState.activeEvent),
+            tickets: computed(() => AppState.tickets),
+            isAttending: computed(() => AppState.tickets.find(t => t.accountId == AppState.account.id)),
+            async cancelEvent() {
+                try {
+                    const yes = await Pop.confirm("Are you sure you want to Cancel this event?");
+                    if (!yes) {
+                        return;
+                    }
+                  const event = AppState.activeEvent;
+                    console.log(AppState.activeEvent);
+                    await eventsService.cancelEvent(event.id);
+                    Pop.success("You are no longer attending this event");
+                }
+                catch (error) {
+                    Pop.error(error);
+                }
+            },
+            async addTicket() {
+                try {
+                    if (!AppState.account.id) {
+                        return AuthService.loginWithRedirect();
+                    }
+                    await attendeesService.addTicket({
+                        eventId: AppState.activeEvent.id || route.params.id,
+                    });
+                    Pop.success("Thanks for coming to our event!");
+                }
+                catch (error) {
+                    Pop.error(error);
+                }
+            },
+            async removeTicket() {
+                try {
+                    const yes = await Pop.confirm("Are you sure you want to Un-Attend this event?");
+                    if (!yes) {
+                        return;
+                    }
+                    const ticket = AppState.tickets.find((t) => t.accountId == AppState.account.id &&
+                        t.eventId == AppState.activeEvent.id);
+                    await attendeesService.removeTicket(ticket.id);
+                    Pop.success("You are no longer attending this event");
+                }
+                catch (error) {
+                    Pop.error(error);
+                }
+            },
+            async createComment() {
+                try {
+                    editable.value.eventId = route.params.id
+                    await commentsService.createComment(editable.value);
+                }
+                catch (error) {
+                    Pop.error(error);
+                }
+            },
+            async removeComment() {
+                try {
+                    const yes = await Pop.confirm("Are you sure you want to delete your comment?");
+                    if (!yes) {
+                        return;
+                    }
+                    const comment = AppState.comments.find((c) => c.creatorId == AppState.account.id &&
+                        c.eventId == AppState.activeEvent.id);
+                    await commentsService.removeComment(comment.id);
+                    Pop.success("Your Comment has been removed");
+                }
+                catch (error) {
+                    Pop.error(error);
+                }
+            },
+        };
+    },
+    components: { Ticket, Comment }
 };
 </script>
 
