@@ -10,11 +10,10 @@
           <div class="col-md-5 d-flex align-text-center">
             <img :src="event?.coverImg" alt="" class="mini-pic rounded" />
           </div>
-          <div class="col-md-7 d-flex flex-wrap justify-content-between">
+          <div class="col-md-7 d-flex flex-wrap justify-content-between" v-if="event?.isCanceled == false">
             <div class="col-md-12">
               <div class="d-flex justify-content-between">
                 <h3>{{ event?.name }}</h3>
-                <!-- NOTE need to only show if creator -->
                  <button @click="cancelEvent()" class="btn btn-danger pe-3" v-if="event?.creatorId == account?.id">
                 Cancel Event
               </button>
@@ -26,26 +25,26 @@
               <p>{{ event?.description }}</p>
             </div>
             <div
-              v-if="event?.capacity > 0"
+            
               class="col-md-12 d-flex justify-content-between pe-2"
             >
               <p> Spots left: <div class="text-success">{{ event?.capacity }}</div></p>
-              <button @click="addTicket()" class="btn btn-warning pe-3" v-if="!isAttending">
+              <button @click="addTicket()" class="btn btn-warning pe-3" v-if="!isAttending && event?.capacity > 0 ">
                 Attend
               </button>
-              <button @click="removeTicket()" class="btn btn-danger pe-3" v-else>
+              <button @click="removeTicket()" class="btn btn-danger pe-3" v-else-if="isAttending">
                 Un-Attend
               </button>
             </div>
-            <div v-else class="col-md-12 d-flex align-content-bottom">
+            <div v-if="event?.capacity <= 0" class="col-md-12 d-flex align-content-bottom">
               <h4 class="text-danger">This Event is Sold Out</h4>
             </div>
           </div>
-          <!-- <div class=" col-md-7 d-flex justify-content-center align-content-center text-danger" v-else> 
+          <div class=" col-md-7 d-flex justify-content-center align-content-center text-danger" v-else> 
             <h3 class="pt-3">
               This event has been canceled... sorry
             </h3>
-          </div> -->
+          </div>
         </div>
       </div>
     </div>

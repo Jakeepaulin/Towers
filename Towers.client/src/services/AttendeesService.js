@@ -19,7 +19,6 @@ class AttendeesService {
     const ticket = res.data.profile;
     AppState.tickets.push(ticket);
     this.getTicketsByEventId();
-    console.log(res.data.profile);
   }
 }
 

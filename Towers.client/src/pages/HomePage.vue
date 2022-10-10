@@ -3,8 +3,8 @@
     <div class="row">
       <div class="col-md-12">
         <router-link class="navbar-brand d-flex" :to="{ name: 'Home' }">
-          <div class="d-flex flex-column align-items-center">
-            <img alt="logo" src="../assets/img/cw-logo.png" height="45" />
+          <div class="d-flex flex-column align-items-center" title="Home Page">
+            <h2>Towers</h2>
           </div>
         </router-link>
       </div>
@@ -18,7 +18,7 @@
           <div class="card-body"></div>
         </div>
       </div>
-      <div class="col-md-12 d-flex justify-content-around py-1">
+      <div class="col-md-12 d-flex justify-content-around py-2">
         <button @click="getEventsByType('')" class="btn btn-outline-success">
           All Events
         </button>
