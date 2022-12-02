@@ -14,7 +14,7 @@ class EventsService {
       });
     } else {
       res = await api.get("api/events");
-      console.log(res.data);
+      // console.log(res.data);
     }
     AppState.events = res.data.map((e) => new Event(e));
   }

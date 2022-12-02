@@ -150,7 +150,7 @@ export default {
                         return;
                     }
                   const event = AppState.activeEvent;
-                    console.log(AppState.activeEvent);
+                    // console.log(AppState.activeEvent);
                     await eventsService.cancelEvent(event.id);
                     Pop.success("You are no longer attending this event");
                 }
